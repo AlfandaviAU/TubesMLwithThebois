@@ -13,7 +13,7 @@ def softmax(num):
     return np.exp(num) / np.sum(np.exp(num))
 
 # Ganti nama filenya di sini
-filename = "./Bagian A/xor_relu.json"
+filename = "xor_sigmoid.json"
 data = json.load(open(filename))
 
 data_layer = []
@@ -62,6 +62,17 @@ for i in range(len(prediction)):
         prediction[i] = 1
     else:
         prediction[i] = 0
+
+
+print("banyak layer: ", data_n)
+
+for i in range(data_n):
+    print("Layer", i+1, ": ")
+    print("Banyak neuron: ", data_layer[i][0])
+    print("Fungsi aktivasi: ", data_layer[i][1])
+    print("Weight akhir: ", data_layer[i][2])
+    print("Bias: ", data_layer[i][3])
+    print("Nilai aktifasi: ", data_layer[i][4])
 
 print("prediction", prediction)
 
