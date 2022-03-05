@@ -37,10 +37,10 @@ for layer in data:
 target = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 for i in range (data_n):
     # untuk data pertama
+    print(data_layer[i])
     if (i == 0):
         value = np.dot(target, data_layer[i][2]) + data_layer[i][3]
     else:
-
         value = np.dot(target, data_layer[i-1][4]) + data_layer[i][3]
     if (data_layer[i][1] == "sigmoid"):
         passed_val = sigmoid(value)
@@ -51,6 +51,6 @@ for i in range (data_n):
     elif (data_layer[i][1] == "softmax"):
         passed_val = softmax(value)
     
-    data_layer[i][4] = passed_val
+    data_layer[i-1][4] = passed_val
 print(data_layer)
 
