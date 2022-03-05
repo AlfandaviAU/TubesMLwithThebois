@@ -12,7 +12,8 @@ def relu(num):
 def softmax(num):
     return np.exp(num) / np.sum(np.exp(num))
 
-filename = "data.json"
+# Ganti nama filenya di sini
+filename = "./Bagian A/xor_relu.json"
 data = json.load(open(filename))
 
 data_layer = []
@@ -30,21 +31,18 @@ for layer in data:
     ])
     data_n += 1
 
-# print(data_layer)
-# print(data_layer[0])
-# print(data_n)
-
 target = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 for i in range (data_n):
     # untuk data pertama
     if (i == 0):
+
         value = np.dot(target, data_layer[i][2]) + data_layer[i][3]
     else:
         value = np.dot(data_layer[i-1][4], data_layer[i][2]) + data_layer[i][3]
     if (data_layer[i][1] == "sigmoid"):
         passed_val = sigmoid(value)
     elif (data_layer[i][1] == "linear"):
-        passed_val = linear
+        passed_val = linear(value)
     elif (data_layer[i][1] == "relu"):
         passed_val = relu(value)
     elif (data_layer[i][1] == "softmax"):
@@ -55,7 +53,6 @@ for i in range (data_n):
         break
 
     data_layer[i][4] = passed_val
-print(data_layer)
 
 prediction = np.copy(data_layer[-1][4])
 prediction = prediction.reshape(prediction.shape[0], 1)
