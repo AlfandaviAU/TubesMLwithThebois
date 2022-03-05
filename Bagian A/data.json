@@ -2,19 +2,21 @@
     {
         "n": "2",
         "fungsiAktivasi": "sigmoid",
-        "data": [[20, -20],[20, -20]],
+        "data": [
+            [20, -20],
+            [20, -20]
+        ],
         "bias": [-10, 30]
     },
     {
         "n": "1",
         "fungsiAktivasi": "sigmoid",
-        "data": [[20],[20]],
-        "bias": [-10]
-    },
-    {
-        "n": "2",
-        "fungsiAktivasi": "sigmoid",
-        "data": [[10,20],[20,30]],
-        "bias": [-10]
+        "data": [
+            [
+                [20], 
+                [20]
+            ]
+        ],
+        "bias": [-30]
     }
 ]

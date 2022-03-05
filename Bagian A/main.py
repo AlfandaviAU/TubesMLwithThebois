@@ -40,7 +40,7 @@ for i in range (data_n):
     if (i == 0):
         value = np.dot(target, data_layer[i][2]) + data_layer[i][3]
     else:
-        value = np.dot(target, data_layer[i-1][4]) + data_layer[i][3]
+        value = np.dot(data_layer[i-1][4], data_layer[i][2]) + data_layer[i][3]
     if (data_layer[i][1] == "sigmoid"):
         passed_val = sigmoid(value)
     elif (data_layer[i][1] == "linear"):
@@ -54,13 +54,13 @@ for i in range (data_n):
         print("activation function not valid at data layer " + i)
         break
 
-    data_layer[i-1][4] = passed_val
+    data_layer[i][4] = passed_val
 print(data_layer)
 
 prediction = np.copy(data_layer[-1][4])
 prediction = prediction.reshape(prediction.shape[0], 1)
 
-for i in range(len(self.prediction)):
+for i in range(len(prediction)):
     if(prediction[i] > 0.5):
         prediction[i] = 1
     else:
