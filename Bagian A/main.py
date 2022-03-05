@@ -37,7 +37,6 @@ for layer in data:
 target = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 for i in range (data_n):
     # untuk data pertama
-    print(data_layer[i])
     if (i == 0):
         value = np.dot(target, data_layer[i][2]) + data_layer[i][3]
     else:
@@ -50,7 +49,22 @@ for i in range (data_n):
         passed_val = relu(value)
     elif (data_layer[i][1] == "softmax"):
         passed_val = softmax(value)
-    
+
+    else:
+        print("activation function not valid at data layer " + i)
+        break
+
     data_layer[i-1][4] = passed_val
 print(data_layer)
+
+prediction = np.copy(data_layer[-1][4])
+prediction = prediction.reshape(prediction.shape[0], 1)
+
+for i in range(len(self.prediction)):
+    if(prediction[i] > 0.5):
+        prediction[i] = 1
+    else:
+        prediction[i] = 0
+
+print("prediction", prediction)
 
