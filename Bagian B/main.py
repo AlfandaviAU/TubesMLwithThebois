@@ -68,52 +68,35 @@ def loadJSONData(filename):
         data_n += 1
     return(data_layer)
 
-def forwardPropagation(target, filename):
-    data_layer = loadJSONData(filename)
-    data_n = len(data_layer)
-    
-    for i in range (data_n):
-        # untuk data pertama
-        if (i == 0):
-            value = np.dot(target, data_layer[i][2]) + data_layer[i][3]
-        else:
-            value = np.dot(data_layer[i-1][4], data_layer[i][2]) + data_layer[i][3]
-        if (data_layer[i][1] == "sigmoid"):
-            passed_val = sigmoid(value)
-        elif (data_layer[i][1] == "linear"):
-            passed_val = linear(value)
-        elif (data_layer[i][1] == "relu"):
-            passed_val = relu(value)
-        elif (data_layer[i][1] == "softmax"):
-            passed_val = softmax(value)
+def forwardPropagation(mini_data, layers_weights, activation_functions):
+    neurons=[]
+    result =[]
+    for data in mini_data:
+        neuron_per_data = []
+        # print(data)
+        data1 = data
+        for i in range(len(layers_weights)):
+            new_data = []
+            for neuron in layers_weights[i]:
+                cok = np.dot(data1, neuron[:-1]) + neuron[-1]
+                new_data.append(cok)
 
-        else:
-            print("activation function not valid at data layer " + i)
-            break
+            new_data = np.array(new_data)
+            if(activation_functions[i] == "relu"):
+                new_data= relu(new_data)
+            elif(activation_functions[i] == "linear"):
+                new_data= linear(new_data)
+            elif(activation_functions[i] == "sigmoid"):
+                new_data= sigmoid(new_data)
+            elif(activation_functions[i] == "softmax"):
+                new_data= softmax(new_data)
+            neuron_per_data.append(new_data)
+            data1 = new_data
+            print(data1)
+        neurons.append(neuron_per_data)
+    # print(neurons)
 
-        data_layer[i][4] = passed_val
-
-    prediction = np.copy(data_layer[-1][4])
-    prediction = prediction.reshape(prediction.shape[0], 1)
-
-    for i in range(len(prediction)):
-        if(prediction[i] > 0.5):
-            prediction[i] = 1
-        else:
-            prediction[i] = 0
-
-
-    print("banyak layer: ", data_n)
-
-    for i in range(data_n):
-        print("Layer", i+1, ": ")
-        print("Banyak neuron: ", data_layer[i][0])
-        print("Fungsi aktivasi: ", data_layer[i][1])
-        print("Weight akhir: ", data_layer[i][2])
-        print("Bias: ", data_layer[i][3])
-        print("Nilai aktifasi: ", data_layer[i][4])
-
-    print("prediction", prediction)
+    return neurons, result
 
 def backwardPropagation(filename, y_pred, y_actual, batch_size, learning_rate, error_threshold=0.0001, max_iter=200):
     # filename buat ambil struktur jaringan
