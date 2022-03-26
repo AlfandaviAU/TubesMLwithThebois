@@ -3,6 +3,7 @@ import numpy as np
 import json
 #import fungsiAktivasi as FA
 
+# Fungsi aktivasi yang dapat dipakai
 def linear(num):
     return num
 def sigmoid(num):
@@ -11,6 +12,8 @@ def relu(num):
     return np.maximum(num,0)
 def softmax(num):
     return np.exp(num) / np.sum(np.exp(num))
+
+# Turunan fungsi aktivasi, dipakai dalam backpropagation
 def drv_linear(num):
     return np.ones(num.shape)
 def drv_sigmoid(num):
@@ -18,6 +21,8 @@ def drv_sigmoid(num):
 def drv_relu(num):
     return np.where(num < 0, 0, 1)    
 # TODO: Buat fungsi derivatif dari softmax    
+
+
 def softmax_grad(num):
     num = softmax(num) 
     jacob_matrix = np.diag(num)
@@ -28,66 +33,88 @@ def softmax_grad(num):
             else: 
                 jacob_matrix[i][j] = num[i] * (1 - num[i])
     return jacob_matrix
-# Ganti nama filenya di sini
-filename = "xor_sigmoid.json"
-data = json.load(open(filename))
-data_layer = []
-data_n = 0
-prediction = None
 
-for layer in data:
-    # iterasi setiap layer pada json obj
-    data_layer.append([
-        int(layer["n"]), #idx = 0
-        layer["fungsiAktivasi"], #idx = 1
-        np.array(layer["data"]), #idx = 2
-        np.array(layer["bias"]), #idx = 3
-        0# activation value : idx = 4 (default 0)
-    ])
-    data_n += 1
+def forwardPropagation(target, filename):
+    data = json.load(open(filename))
+    data_layer = []
+    data_n = 0
+    prediction = None
 
-target = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-for i in range (data_n):
-    # untuk data pertama
-    if (i == 0):
+    for layer in data:
+        # iterasi setiap layer pada json obj
+        data_layer.append([
+            int(layer["n"]), #idx = 0
+            layer["fungsiAktivasi"], #idx = 1
+            np.array(layer["data"]), #idx = 2
+            np.array(layer["bias"]), #idx = 3
+            0# activation value : idx = 4 (default 0)
+        ])
+        data_n += 1
 
-        value = np.dot(target, data_layer[i][2]) + data_layer[i][3]
-    else:
-        value = np.dot(data_layer[i-1][4], data_layer[i][2]) + data_layer[i][3]
-    if (data_layer[i][1] == "sigmoid"):
-        passed_val = sigmoid(value)
-    elif (data_layer[i][1] == "linear"):
-        passed_val = linear(value)
-    elif (data_layer[i][1] == "relu"):
-        passed_val = relu(value)
-    elif (data_layer[i][1] == "softmax"):
-        passed_val = softmax(value)
+    for i in range (data_n):
+        # untuk data pertama
+        if (i == 0):
 
-    else:
-        print("activation function not valid at data layer " + i)
-        break
+            value = np.dot(target, data_layer[i][2]) + data_layer[i][3]
+        else:
+            value = np.dot(data_layer[i-1][4], data_layer[i][2]) + data_layer[i][3]
+        if (data_layer[i][1] == "sigmoid"):
+            passed_val = sigmoid(value)
+        elif (data_layer[i][1] == "linear"):
+            passed_val = linear(value)
+        elif (data_layer[i][1] == "relu"):
+            passed_val = relu(value)
+        elif (data_layer[i][1] == "softmax"):
+            passed_val = softmax(value)
 
-    data_layer[i][4] = passed_val
+        else:
+            print("activation function not valid at data layer " + i)
+            break
 
-prediction = np.copy(data_layer[-1][4])
-prediction = prediction.reshape(prediction.shape[0], 1)
+        data_layer[i][4] = passed_val
 
-for i in range(len(prediction)):
-    if(prediction[i] > 0.5):
-        prediction[i] = 1
-    else:
-        prediction[i] = 0
+    prediction = np.copy(data_layer[-1][4])
+    prediction = prediction.reshape(prediction.shape[0], 1)
+
+    for i in range(len(prediction)):
+        if(prediction[i] > 0.5):
+            prediction[i] = 1
+        else:
+            prediction[i] = 0
 
 
-print("banyak layer: ", data_n)
+    print("banyak layer: ", data_n)
 
-for i in range(data_n):
-    print("Layer", i+1, ": ")
-    print("Banyak neuron: ", data_layer[i][0])
-    print("Fungsi aktivasi: ", data_layer[i][1])
-    print("Weight akhir: ", data_layer[i][2])
-    print("Bias: ", data_layer[i][3])
-    print("Nilai aktifasi: ", data_layer[i][4])
+    for i in range(data_n):
+        print("Layer", i+1, ": ")
+        print("Banyak neuron: ", data_layer[i][0])
+        print("Fungsi aktivasi: ", data_layer[i][1])
+        print("Weight akhir: ", data_layer[i][2])
+        print("Bias: ", data_layer[i][3])
+        print("Nilai aktifasi: ", data_layer[i][4])
 
-print("prediction", prediction)
+    print("prediction", prediction)
 
+def backwardPropagation(filename, y_pred, y_actual, batch_size, learning_rate, error_threshold=0.0001, max_iter=200):
+    # filename buat ambil struktur jaringan
+    # y_pred: output hasil prediksi
+    # y_actual: output asli
+    # Batch size: ukuran batch, dipakai dengan cara update nilai w nya setiap selesai nghitung sekian data
+    # Sisanya bisa dicek
+    
+    # --- Lakukan sampai error totalnya kurang dari error_threshold atau iterasinya sudah sampai max_iter
+    # Untuk tiap neuron k di layer output, hitung error termnya, d(k)
+    
+    # Untuk tiap neuron h di layer hidden, hitung error termnya, d(h)
+    
+    # CATATAN: error term itu yang kalau di spek nomor f
+    # BTW, itu turunan fungsi aktivasi (kecuali softmax) kepakenya di dOut/dNet (mungkin perlu disesuaikan)
+    # Untuk yang softmax, kita langsung dE/dNet jadi tinggal kalikan ke dNet/dw(ji)
+    
+    # Ganti setiap weight w(ji) (yakni, yang kalau forward dari i ke j)
+    # Caranya, dari w(ji) menjadi w(ji) + delta(w(ji))
+    # dengan delta(w(ji)) = learning_rate * d(j) * x(ji)
+    
+    return
+
+forwardPropagation(np.array([[0, 0], [0, 1], [1, 0], [1, 1]]), "xor_sigmoid.json")
