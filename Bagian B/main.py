@@ -11,7 +11,6 @@ def relu(num):
     return np.maximum(num,0)
 def softmax(num):
     return np.exp(num) / np.sum(np.exp(num))
-
 def drv_linear(num):
     return np.ones(num.shape)
 def drv_sigmoid(num):
@@ -19,11 +18,19 @@ def drv_sigmoid(num):
 def drv_relu(num):
     return np.where(num < 0, 0, 1)    
 # TODO: Buat fungsi derivatif dari softmax    
-
+def softmax_grad(num):
+    num = softmax(num) 
+    jacob_matrix = np.diag(num)
+    for i in range(len(jacob_matrix)):
+        for j in range(len(jacob_matrix)):
+            if i != j:
+                jacob_matrix[i][j] = -num[i] * num[j]
+            else: 
+                jacob_matrix[i][j] = num[i] * (1 - num[i])
+    return jacob_matrix
 # Ganti nama filenya di sini
 filename = "xor_sigmoid.json"
 data = json.load(open(filename))
-
 data_layer = []
 data_n = 0
 prediction = None
