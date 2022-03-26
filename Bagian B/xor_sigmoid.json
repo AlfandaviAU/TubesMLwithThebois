@@ -12,8 +12,7 @@
         "n": "1",
         "fungsiAktivasi": "sigmoid",
         "data": [
-            [20],
-            [20]
+            [20, 20]
         ],
         "bias": [-30]
     }

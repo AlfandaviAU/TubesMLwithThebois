@@ -17,11 +17,27 @@ def softmax(num):
 def drv_linear(num):
     return np.ones(num.shape)
 def drv_sigmoid(num):
-    return sigmoid(num) * (1 - sigmoid(num))
+    return np.multiply(sigmoid(num), (1 - sigmoid(num)))
 def drv_relu(num):
     return np.where(num < 0, 0, 1)    
 # TODO: Buat fungsi derivatif dari softmax    
 
+def drv(num, type):
+    if type == 'linear':
+        return drv_linear(num)
+    elif type == 'sigmoid':
+        return drv_sigmoid(num)
+    elif type == 'relu':
+        return drv_relu(num)
+
+def make_batches(train, batch_size):
+    mini_batches = []
+    np.random.shuffle(train)
+    num_of_batches = int(np.ceil(train.shape[0] // batch_size))
+    for i in range(0, num_of_batches):
+        mini_batch = train[i*batch_size : np.minimum((i + 1)*batch_size, train.shape[0])]
+        mini_batches.append(mini_batch)
+    return mini_batches
 
 def softmax_grad(num):
     num = softmax(num) 
@@ -34,7 +50,7 @@ def softmax_grad(num):
                 jacob_matrix[i][j] = num[i] * (1 - num[i])
     return jacob_matrix
 
-def forwardPropagation(target, filename):
+def loadJSONData(filename):
     data = json.load(open(filename))
     data_layer = []
     data_n = 0
@@ -50,11 +66,15 @@ def forwardPropagation(target, filename):
             0# activation value : idx = 4 (default 0)
         ])
         data_n += 1
+    return(data_layer)
 
+def forwardPropagation(target, filename):
+    data_layer = loadJSONData(filename)
+    data_n = len(data_layer)
+    
     for i in range (data_n):
         # untuk data pertama
         if (i == 0):
-
             value = np.dot(target, data_layer[i][2]) + data_layer[i][3]
         else:
             value = np.dot(data_layer[i-1][4], data_layer[i][2]) + data_layer[i][3]
@@ -101,11 +121,60 @@ def backwardPropagation(filename, y_pred, y_actual, batch_size, learning_rate, e
     # y_actual: output asli
     # Batch size: ukuran batch, dipakai dengan cara update nilai w nya setiap selesai nghitung sekian data
     # Sisanya bisa dicek
+    data_layer = loadJSONData(filename)
+    data_n = len(data_layer)
     
+    weights = [data_layer[i][2] for i in range(len(data_layer))]
+    biases = [data_layer[i][3] for i in range(len(data_layer))]
+    weights_and_biases = []
+    for i, weight in enumerate(weights):
+        weight_and_bias = []
+        for j, weight_neuron in enumerate(weight):
+            weight_and_bias.append(np.append(weight_neuron, biases[i][j]))
+        weights_and_biases.append(np.array(weight_and_bias))
+    weights_and_biases = np.array(weights_and_biases)
+    print(weights_and_biases)
+    
+    activation = [data_layer[i][1] for i in range(len(data_layer))]
+    contoh_array = [
+    [        # layer 1
+        [
+            1,
+            2,
+            3,
+        ],
+        # Layer 2
+        [
+            4,
+            5,
+            7,
+        ]
+    ],
+    [
+        [
+            1,
+            3,
+            5,
+        ],
+        [
+            2,
+            5,
+            6
+        ]
+    ]
+    ]
+        
     # --- Lakukan sampai error totalnya kurang dari error_threshold atau iterasinya sudah sampai max_iter
-    # Untuk tiap neuron k di layer output, hitung error termnya, d(k)
     
+    lastLayer = []
+    # Untuk tiap neuron k di layer output, hitung error termnya, d(k)
     # Untuk tiap neuron h di layer hidden, hitung error termnya, d(h)
+    for i, data_array in enumerate(contoh_array):
+        lastLayer.insert(0, -np.multiply((y_pred[i] - y_actual[i]), drv(weights_and_biases[-1])))
+        # for j in reversed(range(len(data_array) - 1)):
+            # lastLayer.insert(0, -np.multiply(drv(weights_and_biases[j]), np.sum([])))
+        
+        
     
     # CATATAN: error term itu yang kalau di spek nomor f
     # BTW, itu turunan fungsi aktivasi (kecuali softmax) kepakenya di dOut/dNet (mungkin perlu disesuaikan)
@@ -117,4 +186,5 @@ def backwardPropagation(filename, y_pred, y_actual, batch_size, learning_rate, e
     
     return
 
-forwardPropagation(np.array([[0, 0], [0, 1], [1, 0], [1, 1]]), "xor_sigmoid.json")
+# forwardPropagation(np.array([[0, 0], [0, 1], [1, 0], [1, 1]]), "xor_sigmoid.json")
+backwardPropagation("xor_sigmoid.json", [1, 1, 1, 1], [1, 0, 0, 1], 10, 0.01)
