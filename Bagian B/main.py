@@ -1,7 +1,7 @@
 from fileinput import filename
 import numpy as np
 import json
-#import fungsiAktivasi as FA
+#import fungsiAktivasi as FA        
 
 # Fungsi aktivasi yang dapat dipakai
 def linear(num):
