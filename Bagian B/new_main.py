@@ -11,7 +11,7 @@ def loadJSONData(filename):
     for layer in data:
         # iterasi setiap layer pada json obj
         data_layer.append(
-            Layer(None, np.array(layer['data']), np.array(layer['bias']), layer['fungsiAktivasi'])
+            Layer(np.array(layer['bias']), np.array(layer['data']), layer['fungsiAktivasi'])
             # [int(layer["n"]), #idx = 0
             # layer["fungsiAktivasi"], #idx = 1
             # np.array(layer["data"]), #idx = 2
@@ -35,7 +35,7 @@ x_train = np.array([[[0,0]], [[0,1]], [[1,0]], [[1,1]]])
 y_train = np.array([[[0]], [[1]], [[1]], [[0]]])
 
 # ANN
-network = ANN(loadJSONData('xor_relu.json'))
-network.fit(x_train, y_train, 1, 0.05)
+network = ANN(loadJSONData('xor_sigmoid.json'))
+network.fit(x_train, y_train, 9, 0.05)
 out = network.predict(x_train)
 print(out)
