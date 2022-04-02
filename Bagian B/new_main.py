@@ -30,14 +30,18 @@ def make_batches(train, batch_size):
         mini_batches.append(mini_batch)
     return mini_batches
 
+def shuffle(x, y):
+    p = np.random.permutation(len(x))
+    return x[p], y[p]
+
 # XOR
 x_train = np.array([[[0,0]], [[0,1]], [[1,0]], [[1,1]]])
 y_train = np.array([[[0]], [[1]], [[1]], [[0]]])
 
-# ANN
-# network = ANN(loadJSONData('xor_relu.json'))
-# network.fit(x_train, y_train, 70, 0.05)
-# out = network.predict(x_train)
-# print(out)
+x_train_shuffled, y_train_shuffled = shuffle(x_train, y_train)
 
-print(make_batches(x_train, 2))
+# ANN
+network = ANN(loadJSONData('xor_sigmoid.json'))
+network.fit(x_train_shuffled, y_train_shuffled, learning_rate=0.01, batch_size=3, max_iter=120, error_threshold=0.000001)
+out = network.predict(x_train)
+print(out)
