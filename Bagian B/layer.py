@@ -18,8 +18,8 @@ class Layer:
         input_error = np.dot(unact_error, self.weights.T)
         weights_error = np.dot(self.input.T, unact_error)
         
-        self.weights = self.weights - lrn_rate * weights_error
-        self.bias = self.bias - lrn_rate * unact_error
+        self.weights = self.weights + lrn_rate * weights_error
+        self.bias = self.bias + lrn_rate * unact_error
         
         return input_error
         

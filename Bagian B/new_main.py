@@ -35,7 +35,9 @@ x_train = np.array([[[0,0]], [[0,1]], [[1,0]], [[1,1]]])
 y_train = np.array([[[0]], [[1]], [[1]], [[0]]])
 
 # ANN
-network = ANN(loadJSONData('xor_sigmoid.json'))
-network.fit(x_train, y_train, 9, 0.05)
-out = network.predict(x_train)
-print(out)
+# network = ANN(loadJSONData('xor_relu.json'))
+# network.fit(x_train, y_train, 70, 0.05)
+# out = network.predict(x_train)
+# print(out)
+
+print(make_batches(x_train, 2))
